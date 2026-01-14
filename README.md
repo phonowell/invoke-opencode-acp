@@ -5,8 +5,8 @@
 **A skill for [Claude Code CLI](https://claude.ai/code)** that saves thousands of tokens by delegating complex tasks to OpenCode subagent.
 
 > **Note**: This is a skill for the Claude Code CLI tool, not a standalone application. You must have Claude Code installed to use it.
-> 
-> **Requirements**: This skill requires **OpenCode** (via ACP protocol) and **Python 3.7+** to function.
+>
+> **Requirements**: This skill requires **OpenCode** (via ACP protocol) and **Node.js** to function.
 
 ## What This Skill Does
 
@@ -76,7 +76,7 @@ You need three things installed:
 
 1. **Claude Code CLI** (already installed if you're using this)
 2. **OpenCode CLI** (`npm install -g opencode`)
-3. **Python 3.7+** (comes with most systems)
+3. **Node.js** (comes with most systems)
 
 ### Quick Install
 
@@ -88,7 +88,7 @@ npm install -g opencode
 cp -r skills/invoke-opencode-acp ~/.claude/skills/
 
 # 3. Verify it works (optional)
-python3 -m unittest tests/test_acp_client.py
+node ~/.claude/skills/invoke-opencode-acp/tests/test_acp_client.js
 ```
 
 ### Verify Installation
@@ -105,37 +105,22 @@ ls ~/.claude/skills/invoke-opencode-acp/SKILL.md
 
 ## Usage
 
-### For Long Tasks (Interactive Mode)
-
-Best for tasks that take more than 30 minutes or where you want to monitor progress.
-
 Simply tell Claude what you want done:
 
 > "Refactor all Python files in this project to use type hints"
 
-Claude will:
-1. Launch the subagent in the background
-2. Check progress every 5 minutes
-3. Ask if you want to continue or stop
-4. Deliver the results when done
+Claude will delegate the task to OpenCode subagent and return the results.
 
-**Example tasks for interactive mode**:
+**Timeout guidelines** (OpenCode is slow):
+- Simple tasks (math, short answers): 180s (3min) minimum
+- Medium tasks (single file, ~100 lines): 600s (10min) minimum
+- Complex tasks (multi-file, refactoring): 1800s (30min) minimum
+
+**Example tasks**:
 - "Refactor the entire codebase"
-- "Run comprehensive security audit"
-- "Generate documentation for all APIs"
-
-### For Quick Tasks (One-shot Mode)
-
-Best for tasks that take less than 30 minutes.
-
-> "Update the README.md with new installation instructions"
-
-Claude will execute and return results directly.
-
-**Example tasks for one-shot mode**:
-- "Update a single document"
-- "Fix a specific bug"
-- "Add a small feature"
+- "Update the README.md with new instructions"
+- "Add type hints to all Python files"
+- "Run security audit on the codebase"
 
 ## Real-World Examples
 
@@ -233,20 +218,22 @@ npm install -g opencode
 - Enable in Claude Code settings
 
 **Task timeout**
-- Long tasks will automatically use interactive mode
-- You'll be asked to continue or stop every 5 minutes
+- Increase the `-t` parameter value
+- See timeout guidelines in Usage section
+- OpenCode can be slow, especially for complex tasks
 
 ## Technical Details (For the Curious)
 
-This skill uses the ACP (Agent Control Protocol) to communicate with OpenCode. It:
+This skill uses the ACP (Agent Control Protocol) to communicate with OpenCode:
 
-1. Launches OpenCode in the background
-2. Creates a dedicated session
-3. Sends your task objective
-4. Filters out internal "thinking" (no need to see the reasoning)
-5. Returns only the key results
+1. Launches `opencode acp` via Node.js child_process
+2. Creates a dedicated session via JSON-RPC
+3. Sends your task via `session/prompt`
+4. Streams results via `session/update` events
+5. Filters out `<thinking>` tags
+6. Returns only the final output
 
-The ~6 second initialization overhead is negligible compared to the token savings for complex tasks.
+**Implementation**: `skills/invoke-opencode-acp/acp_client.js` (192 lines)
 
 ## License
 

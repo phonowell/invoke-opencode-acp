@@ -5,8 +5,8 @@
 **一个用于 [Claude Code CLI](https://claude.ai/code) 的技能**，通过将复杂任务委托给 OpenCode 子代理，节省数千个 token。
 
 > **注意**：这是一个 Claude Code CLI 工具的技能，不是独立应用程序。你必须安装 Claude Code 才能使用它。
-> 
-> **要求**：此技能需要 **OpenCode**（通过 ACP 协议）和 **Python 3.7+** 才能运行。
+>
+> **要求**：此技能需要 **OpenCode**（通过 ACP 协议）和 **Node.js** 才能运行。
 
 ## 这个技能做什么
 
@@ -76,7 +76,7 @@
 
 1. **Claude Code CLI**（如果正在使用，应该已经安装）
 2. **OpenCode CLI**（`npm install -g opencode`）
-3. **Python 3.7+**（大多数系统自带）
+3. **Node.js**（大多数系统自带）
 
 ### 快速安装
 
@@ -88,7 +88,7 @@ npm install -g opencode
 cp -r skills/invoke-opencode-acp ~/.claude/skills/
 
 # 3. 验证是否工作（可选）
-python3 -m unittest tests/test_acp_client.py
+node ~/.claude/skills/invoke-opencode-acp/tests/test_acp_client.js
 ```
 
 ### 验证安装
@@ -105,37 +105,22 @@ ls ~/.claude/skills/invoke-opencode-acp/SKILL.md
 
 ## 使用方法
 
-### 长时间任务（交互模式）
-
-适用于耗时超过 30 分钟或想要监控进度的任务。
-
 只需告诉 Claude 你想要完成什么：
 
 > "重构此项目中的所有 Python 文件以使用类型提示"
 
-Claude 将：
-1. 在后台启动子代理
-2. 每 5 分钟检查进度
-3. 询问你是想继续还是停止
-4. 完成后交付结果
+Claude 将委托任务给 OpenCode 子代理并返回结果。
 
-**交互模式示例任务**：
+**超时指南**（OpenCode 较慢）：
+- 简单任务（数学、简短答案）：至少 180 秒（3 分钟）
+- 中等任务（单个文件，约 100 行）：至少 600 秒（10 分钟）
+- 复杂任务（多文件、重构）：至少 1800 秒（30 分钟）
+
+**示例任务**：
 - "重构整个代码库"
-- "运行全面的安全审计"
-- "为所有 API 生成文档"
-
-### 快速任务（一次性模式）
-
-适用于耗时少于 30 分钟的任务。
-
-> "使用新的安装说明更新 README.md"
-
-Claude 将直接执行并返回结果。
-
-**一次性模式示例任务**：
-- "更新单个文档"
-- "修复特定错误"
-- "添加小功能"
+- "使用新的安装说明更新 README.md"
+- "为所有 Python 文件添加类型提示"
+- "对代码库运行安全审计"
 
 ## 真实示例
 
@@ -233,8 +218,9 @@ npm install -g opencode
 - 在 Claude Code 设置中启用
 
 **任务超时**
-- 长时间任务将自动使用交互模式
-- 你每 5 分钟会被询问是否继续或停止
+- 增加 `-t` 参数的值
+- 参见使用方法中的超时指南
+- OpenCode 可能较慢，特别是复杂任务
 
 ## 技术细节（供好奇者）
 

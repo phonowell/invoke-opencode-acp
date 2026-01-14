@@ -1,6 +1,6 @@
 ---
 name: invoke-opencode-acp
-description: Delegate complex tasks to OpenCode subagent (saves main agent tokens)
+description: Delegate complex tasks to OpenCode subagent, use when ≥2 file modifications or batch operations
 allowed-tools: Bash
 ---
 
@@ -8,70 +8,48 @@ allowed-tools: Bash
 
 ## When to Use
 
-**Aggressive delegation**: ≥2 file modifications or complex tasks · saves main agent tokens (~6s overhead acceptable)
+**Triggers**: ≥2 file modifications · refactoring · batch operations · code review · multi-step reasoning · git operations
+**Avoid**: Single-file quick edits · recursive OpenCode calls
 
-**Applicable scenarios**: Refactoring · batch operations · code review · multi-file changes · independent subtasks · multi-step reasoning · git operations (commit/push/PR)
-
-**Not applicable**: Single-file quick edits · avoid recursive calls within OpenCode
-
-**Key principle**: Provide minimal context (objectives only) · let subagent autonomously analyze (paths/formats/details)
+**Core intent**: Token savings (50-90%) · main agent focuses on high-level decisions · subagent handles execution details
 
 ## Efficiency Priority
 
-`acp_client.py` (this directory) > manual protocol · `opencode acp` > run/serve (avoid HTTP)
+`acp_client.js` (this directory) > manual protocol · `opencode acp` > run/serve (avoid HTTP)
 
-## Protocol Essentials
+## Protocol Flow
 
-**Flow**: Launch `opencode acp` → initialize (protocolVersion: 1 numeric) → session/new (mcpServers: [] array) → session/prompt (prompt: [] array, not content) → listen for session/update
+1. `opencode acp` → stdin/stdout communication
+2. `initialize` (protocolVersion: 1 numeric)
+3. `session/new` (cwd, mcpServers: [] array)
+4. `session/prompt` (prompt: [] array format, not content)
+5. Listen for `session/update` → filter `<thinking>` tags
+6. Wait for `result.stopReason === 'end_turn'`
 
-**Error codes**: -32001 not found · -32002 rejected · -32003 state · -32004 unsupported · -32601 method · -32602 params
-
-**Constraints**: Continuous streaming · select/non-blocking IO · independent sessionId for concurrency · terminate/kill for cleanup
+**Error codes**: -32001 not found · -32002 rejected · -32003 state · -32601 method · -32602 params
 
 ## Usage
 
-### Interactive Mode (Recommended, supports timeout decisions)
-
-**Launch task in background**:
 ```bash
-python3 ~/.claude/skills/invoke-opencode-acp/acp_client.py "$PWD" "task description" -o /tmp/opencode_output.txt
-```
-
-**Main agent check loop** (every 5 minutes):
-1. Use `Bash(..., run_in_background=True)` to start task, get task_id
-2. Use `TaskOutput(task_id, block=True, timeout=300000)` to wait 5 min
-3. Check status:
-   - If `status == "completed"`: Read output file, return result
-   - If `status == "running"`: AskUserQuestion whether to continue
-     - User chooses continue: repeat step 2
-     - User chooses terminate: `KillShell(task_id)` auto-cleanup
-
-**Advantages**:
-- Maintains OpenCode session without interruption
-- User can decide at each checkpoint
-- Main agent can auto-kill and cleanup processes
-
-### One-shot Mode (for quick tasks)
-
-```bash
-python3 ~/.claude/skills/invoke-opencode-acp/acp_client.py "$PWD" "task" -o /tmp/output.txt -t 300
+node ~/.claude/skills/invoke-opencode-acp/acp_client.js "$PWD" "task description" -o /tmp/output.txt -t 300
 ```
 
 **Parameters**:
-- `-o FILE` (required): Output file path, **avoids polluting main agent context**
-- `-t SECONDS`: Timeout in seconds (default: 1800s = 30 min)
-- `-v`: Verbose mode, protocol messages to stderr (for debugging)
+- `-o FILE` (required): Output file · avoids polluting main conversation
+- `-t SECONDS`: Timeout in seconds (default: 1800 = 30min)
+- `-v`: Verbose mode · protocol messages to stderr
 
-**Token optimization**: Subagent output auto-injected with constraints (summary-first · filter thinking · key results only)
+**Timeout guidelines** (OpenCode is slow):
+- Simple tasks (math, short answers): 180s (3min) minimum
+- Medium tasks (single file, ~100 lines): 600s (10min) minimum
+- Complex tasks (multi-file, refactoring): 1800s (30min) minimum
 
-## Output
-
-**Interactive mode**:
-- Task running: Ask every 5 min whether to continue
-- User confirms continue: Extend wait time
-- User chooses terminate: Auto-kill process
-- Task completed: ✓ Subagent task completed
-
-**One-shot mode**:
+**Output**:
 - ✓ Subagent task completed
-- ✗ Timeout/Error: {reason}
+- ✗ Timeout: {reason}
+- ✗ Error: {reason}
+
+## Dependencies
+
+- Node.js
+- OpenCode CLI: `npm install -g opencode`
