@@ -1,4 +1,4 @@
-[English](README.md) | [中文](README.zh.md)
+[English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md)
 
 # invoke-opencode-acp
 
@@ -242,3 +242,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 ---
 
 中文版本：[README.zh.md](README.zh.md)
+日本語版本：[README.ja.md](README.ja.md)
