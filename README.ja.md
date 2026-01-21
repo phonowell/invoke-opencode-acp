@@ -283,7 +283,7 @@ npm install -g opencode
 5. `<thinking>`タグをフィルタリング
 6. 最終出力のみを返却
 
-**実装**: `skills/invoke-opencode-acp/acp_client.js`（192行）
+**実装**: `skills/invoke-opencode-acp/acp_client.cjs`（191行）
 
 ## ライセンス
 

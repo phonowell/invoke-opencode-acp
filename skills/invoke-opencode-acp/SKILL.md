@@ -15,7 +15,7 @@ allowed-tools: Bash
 
 ## Efficiency Priority
 
-`acp_client.js` (this directory) > manual protocol · `opencode acp` > run/serve (avoid HTTP)
+`acp_client.cjs` (this directory) > manual protocol · `opencode acp` > run/serve (avoid HTTP)
 
 ## Protocol Flow
 
@@ -31,7 +31,7 @@ allowed-tools: Bash
 ## Usage
 
 ```bash
-node ~/.claude/skills/invoke-opencode-acp/acp_client.js "$PWD" "task description" -o /tmp/output.txt -t 300
+node ~/.claude/skills/invoke-opencode-acp/acp_client.cjs "$PWD" "task description" -o /tmp/output.txt -t 300
 ```
 
 **Parameters**:

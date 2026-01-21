@@ -145,7 +145,7 @@ class ACPClient {
 async function main() {
 	const args = process.argv.slice(2);
 	if (args.length < 2 || args.includes('--help') || args.includes('-h')) {
-		console.error('Usage: node acp_client.js <cwd> <task> -o <output_file> [-t timeout] [-v]');
+		console.error('Usage: node acp_client.cjs <cwd> <task> -o <output_file> [-t timeout] [-v]');
 		console.error('  -o FILE  Output file (required)');
 		console.error('  -t SEC   Timeout in seconds (default: 1800)');
 		console.error('  -v       Verbose mode');

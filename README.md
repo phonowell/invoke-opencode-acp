@@ -233,7 +233,7 @@ This skill uses the ACP (Agent Control Protocol) to communicate with OpenCode:
 5. Filters out `<thinking>` tags
 6. Returns only the final output
 
-**Implementation**: `skills/invoke-opencode-acp/acp_client.js` (192 lines)
+**Implementation**: `skills/invoke-opencode-acp/acp_client.cjs` (191 lines)
 
 ## License
 

@@ -1,5 +1,5 @@
-/** Unit tests for acp_client.js */
-const { ACPClient, ACPError, ACPTimeoutError } = require('../skills/invoke-opencode-acp/acp_client.js');
+/** Unit tests for acp_client.cjs */
+const { ACPClient, ACPError, ACPTimeoutError } = require('../skills/invoke-opencode-acp/acp_client.cjs');
 const assert = require('assert');
 
 // Test helper
@@ -13,7 +13,7 @@ function test(name, fn) {
 	}
 }
 
-console.log('\n=== Running acp_client.js tests ===\n');
+console.log('\n=== Running acp_client.cjs tests ===\n');
 
 // ===== Error Classes =====
 test('ACPError extends Error', () => {
