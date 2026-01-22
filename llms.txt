@@ -1,0 +1,22 @@
+Project: invoke-opencode-acp
+Repository: https://github.com/phonowell/invoke-opencode-acp
+Homepage: none
+
+Summary (EN): Claude Code CLI skill that delegates complex tasks to an OpenCode subagent via ACP protocol to save tokens.
+
+Primary use cases (EN):
+- Multi-file refactors and batch operations
+- Code reviews or long-running tasks via subagent
+
+Keywords (EN): claude-code, opencode, acp-protocol, json-rpc, nodejs, cli, llm-tool
+
+Install (EN): npm install -g opencode; cp -r skills/invoke-opencode-acp ~/.claude/skills/
+
+Quick usage (EN):
+- node ~/.claude/skills/invoke-opencode-acp/acp_client.cjs "$PWD" "task description" -o /tmp/output.txt -t 300
+
+API/Docs: README.md
+Examples: README.md
+License: MIT
+Citation: none
+Contact: https://github.com/phonowell/invoke-opencode-acp/issues

@@ -68,6 +68,33 @@ Perfect for:
 
 The subagent can read files, make edits, run tests, and more—just like a full developer—without consuming your main conversation's context.
 
+## LLM Friendly Summary
+
+Claude Code CLI skill that delegates complex tasks to an OpenCode subagent via ACP protocol to save tokens.
+
+### Quickstart
+```bash
+npm install -g opencode
+cp -r skills/invoke-opencode-acp ~/.claude/skills/
+node ~/.claude/skills/invoke-opencode-acp/acp_client.cjs "$PWD" "task description" -o /tmp/output.txt -t 300
+```
+
+### Key Capabilities
+- Delegate complex tasks to an OpenCode subagent via ACP
+- Save 50-90% tokens by offloading work
+- Return concise results to an output file
+
+### Typical Use Cases
+- Multi-file refactors and batch operations
+- Code reviews or long-running tasks
+
+### Keywords
+- claude-code, opencode, acp-protocol, json-rpc, nodejs, cli, llm-tool
+
+### LLM Resources
+- `llms.txt`
+- `llms.md`
+
 ## Installation
 
 ### Prerequisites
